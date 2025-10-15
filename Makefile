@@ -3,7 +3,7 @@ PROJECT := cvec
 CC := clang
 CFLAGS = -Wall -Wextra -Werror -Wunused-result -Wconversion
 CPPFLAGS = -Iinclude
-LDFLAGS = -L/usr/local/lib -lcerror -lcarena
+LDFLAGS = -L/usr/local/lib -lcarena
 
 # Dirs
 BUILD_DIR := build
@@ -41,11 +41,9 @@ debug: $(LIB_A) $(LIB_SO)
 test: CPPFLAGS += -DTEST
 test: LDFLAGS += -lctest
 test: $(TEST_EXE)
-	./$<
 
 example: LDFLAGS += -lcvec
 example: $(EXAMPLE_EXE)
-	./$<
 
 clean:
 	rm -rf $(BUILD_DIR) $(DOC_DIR) compile_commands.json tags

@@ -29,9 +29,10 @@ SOFTWARE.
 
 #include "cvec.h"
 #include <carena.h>
-#include <cerror.h>
 #include <string.h>
 #include <stdbool.h>
+
+_Thread_local static const char *g_err;
 
 /** The default capacity of the vector object. */
 #define DEFAULT_CAPACITY 8
@@ -58,19 +59,18 @@ size_t vec_default_capacity() {
 }
 
 /** Creates a new pointer for a specific type.
- * This function sets cerror on failure.
  * \param sizeof_type The size of the type that's meant to be stored 
  * in the vector.
  * \return A pointer to the allocated vector. */
 vec_t *vec_new(size_t sizeof_type) {
 	vec_t *vec = carena_alloc(sizeof(vec_t));
 	if (!vec) {
-		cerror_push("Failed to allocate vector", NULL, __func__, -1);
+		g_err = "Failed to allocate vector.";
 		return NULL;
 	}
 	vec->data = carena_alloc(sizeof_type * DEFAULT_CAPACITY);
 	if (!vec->data) {
-		cerror_push("Failed to allocate vector data", NULL, __func__, -1);
+		g_err = "Failed to allocate vector data.";
 		return NULL;
 	}
 	vec->sizeof_type = sizeof_type;
@@ -80,47 +80,43 @@ vec_t *vec_new(size_t sizeof_type) {
 }
 
 /** Returns the the length of a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be accessed. 
  * \return The length of the vector. */
 size_t vec_len(const vec_t *vec) {
 	if (!vec) {
-		cerror_push("Invalid argument", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return (size_t)-1;
 	}
 	return vec->len;
 }
 
 /** Returns the the size of a vector's type.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be accessed. 
  * \return The size of the vector's type. */
 size_t vec_size(const vec_t *vec) {
 	if (!vec) {
-		cerror_push("Invalid argument", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return (size_t)-1;
 	}
 	return vec->sizeof_type;
 }
 
 /** Returns the the capacity of a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be accessed. 
  * \return The capacity of the vector. */
 size_t vec_capacity(const vec_t *vec) {
 	if (!vec) {
-		cerror_push("Invalid argument", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return (size_t)-1;
 	}
 	return vec->capacity;
 }
 
 /** Deletes a vector instance.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be deleted. */
 void vec_del(vec_t *vec) {
 	if (!vec || !vec->data) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	carena_free(vec->data);
@@ -128,24 +124,22 @@ void vec_del(vec_t *vec) {
 }
 
 /** Returns a const pointer to a vector item.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be accessed.
  * \param index The index of the element to be accessed. 
  * \return A const pointer to the item. */
 const void *vec_view(const vec_t *vec, size_t index) {
 	if (!vec) {
-		cerror_push("Invalid argument", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return NULL;
 	}
 	if (index >= vec->len) {
-		cerror_push("Index is out of bounds.", NULL, __func__, -1);
+		g_err = "Index is out of bounds.";
 		return NULL;
 	}
 	return (void*)((unsigned char*)vec->data + index * vec->sizeof_type);
 }
 
 /** Append an item at the end of the vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified.
  * \param value A pointer to the value to be appended.
  * \param sizeof_type The size of the vector's type 
@@ -155,13 +149,13 @@ void vec_push_back(vec_t *vec, void *value, size_t sizeof_type) {
 		!vec || !vec->data || !value ||
 		sizeof_type != vec->sizeof_type
 	) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	if (vec->len + 1 > vec->capacity) {
 		void *tmp = carena_realloc(vec->data, vec->capacity * 2);
 		if (!tmp) {
-			cerror_push("Failed to resize vector.", NULL, __func__, -1);
+			g_err = "Failed to resize vector.";
 			return;
 		}
 		vec->data = tmp;
@@ -173,21 +167,20 @@ void vec_push_back(vec_t *vec, void *value, size_t sizeof_type) {
 }	
 
 /** Removes the last item of a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified. */
 void vec_pop_back(vec_t *vec) {
 	if (!vec || !vec->data) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	if (!vec->len) {
-		cerror_push("Cannot pop empty vector.", NULL, __func__, -1);
+		g_err = "Cannot pop empty vector.";
 		return;
 	}
 	if (vec->len - 1 < vec->capacity / 2 && vec->capacity / 2 >= DEFAULT_CAPACITY) {
 		void *tmp = carena_realloc(vec->data, vec->capacity / 2);
 		if (!tmp) {
-			cerror_push("Failed to resize vector.", NULL, __func__, -1);
+			g_err = "Failed to resize vector.";
 			return;
 		}
 		vec->data = tmp;
@@ -197,7 +190,6 @@ void vec_pop_back(vec_t *vec) {
 }
 
 /** Prepends an item at the beginning of a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified.
  * \param value A pointer to the value to be prepended.
  * \param sizeof_type The size of the vector's type 
@@ -207,13 +199,13 @@ void vec_push_front(vec_t *vec, void *value, size_t sizeof_type) {
 		!vec || !vec->data || !value ||
 		sizeof_type != vec->sizeof_type
 	) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	if (vec->len + 1 > vec->capacity) {
 		void *tmp = carena_realloc(vec->data, vec->capacity * 2);
 		if (!tmp) {
-			cerror_push("Failed to resize vector.", NULL, __func__, -1);
+			g_err = "Failed to resize vector.";
 			return;
 		}
 		vec->data = tmp;
@@ -226,15 +218,14 @@ void vec_push_front(vec_t *vec, void *value, size_t sizeof_type) {
 }
 
 /** Removes the first item of a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified. */
 void vec_pop_front(vec_t *vec) {
 	if (!vec || !vec->data) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	if (!vec->len) {
-		cerror_push("Cannot pop empty vector.", NULL, __func__, -1);
+		g_err = "Cannot pop empty vector.";
 		return;
 	}
 	unsigned char *chardata = (unsigned char*)((vec->data));
@@ -242,7 +233,7 @@ void vec_pop_front(vec_t *vec) {
 	if (vec->len - 1 < vec->capacity / 2 && vec->capacity / 2 >= DEFAULT_CAPACITY) {
 		void *tmp = carena_realloc(vec->data, vec->capacity / 2);
 		if (!tmp) {
-			cerror_push("Failed to resize vector.", NULL, __func__, -1);
+			g_err = "Failed to resize vector.";
 			return;
 		}
 		vec->data = tmp;
@@ -252,7 +243,6 @@ void vec_pop_front(vec_t *vec) {
 }
 
 /** Appends an array at the end of a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified.
  * \param arr The array to be appended. 
  * \param len The length of the array. 
@@ -263,13 +253,13 @@ void vec_append(vec_t *vec, void *arr, size_t len, size_t sizeof_type) {
 		!vec || !vec->data || !arr ||
 		sizeof_type != vec->sizeof_type
 	) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	while (vec->len + len > vec->capacity) {
 		void *tmp = carena_realloc(vec->data, vec->capacity * 2);
 		if (!tmp) {
-			cerror_push("Failed to resize vector.", NULL, __func__, -1);
+			g_err = "Failed to resize vector.";
 			return;
 		}
 		vec->data = tmp;
@@ -281,7 +271,6 @@ void vec_append(vec_t *vec, void *arr, size_t len, size_t sizeof_type) {
 }
 
 /** Prepends an array at the beginning of a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified.
  * \param arr The array to be prepended. 
  * \param len The length of the array. 
@@ -292,13 +281,13 @@ void vec_prepend(vec_t *vec, void *arr, size_t len, size_t sizeof_type) {
 		!vec || !vec->data || !arr ||
 		sizeof_type != vec->sizeof_type
 	) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	while (vec->len + len > vec->capacity) {
 		void *tmp = carena_realloc(vec->data, vec->capacity * 2);
 		if (!tmp) {
-			cerror_push("Failed to resize vector.", NULL, __func__, -1);
+			g_err = "Failed to resize vector.";
 			return;
 		}
 		vec->data = tmp;
@@ -311,20 +300,19 @@ void vec_prepend(vec_t *vec, void *arr, size_t len, size_t sizeof_type) {
 }
 
 /** Removes an item of a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified.
  * \param index The item's index. */
 void vec_remove(vec_t *vec, size_t index) {
 	if (!vec || !vec->data) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	if (!vec->len) {
-		cerror_push("Cannot remove from empty vector.", NULL, __func__, -1);
+		g_err = "Cannot remove from empty vector.";
 		return;
 	}
 	if (index >= vec->len) {
-		cerror_push("index is out of bounds.", NULL, __func__, -1);
+		g_err = "index is out of bounds.";
 		return;
 	}
 	unsigned char *chardata = (unsigned char*)((vec->data));
@@ -336,7 +324,7 @@ void vec_remove(vec_t *vec, size_t index) {
 	if (vec->len - 1 < vec->capacity / 2 && vec->capacity / 2 >= DEFAULT_CAPACITY) {
 		void *tmp = carena_realloc(vec->data, vec->capacity / 2);
 		if (!tmp) {
-			cerror_push("Failed to resize vector.", NULL, __func__, -1);
+			g_err = "Failed to resize vector.";
 			return;
 		}
 		vec->data = tmp;
@@ -346,7 +334,6 @@ void vec_remove(vec_t *vec, size_t index) {
 }
 
 /** Inserts an item into a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified.
  * \param index The index where the item is to be inserted.
  * \param value A pointer to the value to be inserted.
@@ -357,11 +344,11 @@ void vec_insert(vec_t *vec, size_t index, void *value, size_t sizeof_type) {
 		!vec || !vec->data || !value ||
 		sizeof_type != vec->sizeof_type
 	) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	if (index >= vec->len) {
-		cerror_push("index is out of bounds.", NULL, __func__, -1);
+		g_err = "index is out of bounds.";
 		return;
 	}
 	unsigned char *chardata = (unsigned char*)((vec->data));
@@ -374,7 +361,7 @@ void vec_insert(vec_t *vec, size_t index, void *value, size_t sizeof_type) {
 	if (vec->len + 1 > vec->capacity) {
 		void *tmp = carena_realloc(vec->data, vec->capacity * 2);
 		if (!tmp) {
-			cerror_push("Failed to resize vector.", NULL, __func__, -1);
+			g_err = "Failed to resize vector.";
 			return;
 		}
 		vec->data = tmp;
@@ -384,7 +371,6 @@ void vec_insert(vec_t *vec, size_t index, void *value, size_t sizeof_type) {
 }
 
 /** Replaces an item in a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified.
  * \param index The index where the item is to be replaced.
  * \param value A pointer to the value to be inserted.
@@ -395,11 +381,11 @@ void vec_replace(vec_t *vec, size_t index, void *value, size_t sizeof_type) {
 		!vec || !vec->data || !value ||
 		sizeof_type != vec->sizeof_type
 	) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	if (index >= vec->len) {
-		cerror_push("index is out of bounds.", NULL, __func__, -1);
+		g_err = "index is out of bounds.";
 		return;
 	}
 	unsigned char *chardata = (unsigned char*)((vec->data));
@@ -407,7 +393,6 @@ void vec_replace(vec_t *vec, size_t index, void *value, size_t sizeof_type) {
 }
 
 /** Replaces a range of items in a vector.
- * This function sets cerror on failure.
  * \param vec A pointer to the vector to be modified.
  * \param index The index where the new array is to be inserted.
  * \param arr The new array to be inserted.
@@ -423,21 +408,21 @@ void vec_replace_range(
 		!vec || !vec->data || !arr ||
 		sizeof_type != vec->sizeof_type
 	) {
-		cerror_push("Invalid argument.", NULL, __func__, -1);
+		g_err = "Invalid argument.";
 		return;
 	}
 	if (index >= vec->len) {
-		cerror_push("index is out of bounds.", NULL, __func__, -1);
+		g_err = "index is out of bounds.";
 		return;
 	}
 	if (index + range > vec->len) {
-		cerror_push("range is too big.", NULL, __func__, -1);
+		g_err = "range is too big.";
 		return;
 	}
 	while (vec->len - range + len > vec->capacity) {
 		void *tmp = carena_realloc(vec->data, vec->capacity * 2);
 		if (!tmp) {
-			cerror_push("Failed to resize vector.", NULL, __func__, -1);
+			g_err = "Failed to resize vector.";
 			return;
 		}
 		vec->data = tmp;
@@ -451,4 +436,10 @@ void vec_replace_range(
 		(vec->len - index - range) * sizeof_type);
 	memcpy(&chardata[index * sizeof_type], arr, len * sizeof_type);
 	vec->len = vec->len - range + len;
+}
+
+/** Returns a string containing the latest error information if exists or 
+ * NULL if it does not. */
+const char *vec_get_error() {
+	return g_err;
 }

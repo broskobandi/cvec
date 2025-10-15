@@ -1,6 +1,5 @@
 #include "cvec.h"
 #include <ctest.h>
-#include <cerror.h>
 #include <string.h>
 
 void test_vec_new_size_len_capacity_del() {
@@ -9,7 +8,7 @@ void test_vec_new_size_len_capacity_del() {
 	CTEST(vec_len(vec) == 0);
 	CTEST(vec_capacity(vec) == vec_default_capacity());
 	vec_del(vec);
-	CTEST(cerror_state() == false);
+	CTEST(!vec_get_error());
 }
 
 void test_vec_push_and_pop_back() {
@@ -19,7 +18,7 @@ void test_vec_push_and_pop_back() {
 		if (vec_len(vec) + 1 > expected_capacity)
 			expected_capacity *= 2;
 		vec_push_back(vec, &i, sizeof(size_t));
-		CTEST(!cerror_state());
+		CTEST(!vec_get_error());
 		CTEST(expected_capacity == vec_capacity(vec));
 		CTEST(*(size_t*)vec_view(vec, i) == i);
 	}
@@ -30,11 +29,11 @@ void test_vec_push_and_pop_back() {
 			expected_capacity / 2 >= vec_default_capacity()
 		) expected_capacity /= 2;
 		vec_pop_back(vec);
-		CTEST(!cerror_state());
+		CTEST(!vec_get_error());
 		CTEST(expected_capacity == vec_capacity(vec));
 	}
 	vec_del(vec);
-	CTEST(cerror_state() == false);
+	CTEST(!vec_get_error());
 }
 
 void test_vec_push_and_pop_front() {
@@ -44,7 +43,7 @@ void test_vec_push_and_pop_front() {
 		if (vec_len(vec) + 1 > expected_capacity)
 			expected_capacity *= 2;
 		vec_push_front(vec, &i, sizeof(size_t));
-		CTEST(!cerror_state());
+		CTEST(!vec_get_error());
 		CTEST(expected_capacity == vec_capacity(vec));
 		CTEST(*(size_t*)vec_view(vec, 0) == i);
 		CTEST(*(size_t*)vec_view(vec, vec_len(vec) - 1) == 0);
@@ -57,11 +56,11 @@ void test_vec_push_and_pop_front() {
 		) expected_capacity /= 2;
 		CTEST(*(size_t*)vec_view(vec, vec_len(vec) - 1) == 0);
 		vec_pop_front(vec);
-		CTEST(!cerror_state());
+		CTEST(!vec_get_error());
 		CTEST(expected_capacity == vec_capacity(vec));
 	}
 	vec_del(vec);
-	CTEST(cerror_state() == false);
+	CTEST(!vec_get_error());
 }
 
 void test_vec_append_prepend() {
@@ -74,7 +73,7 @@ void test_vec_append_prepend() {
 	CTEST(!strcmp(vec_view(vec, 0), "Hello, World!"));
 	CTEST(vec_len(vec) == strlen("Hello, World!") + 1);
 	vec_del(vec);
-	CTEST(!cerror_state());
+	CTEST(!vec_get_error());
 }
 
 void test_vec_remove() {
@@ -86,7 +85,7 @@ void test_vec_remove() {
 	CTEST(!memcmp(vec_view(vec, 0), exp, 3 * sizeof(int)));
 	CTEST(vec_len(vec) == 3);
 	vec_del(vec);
-	CTEST(!cerror_state());
+	CTEST(!vec_get_error());
 }
 
 void test_vec_insert() {
@@ -98,7 +97,7 @@ void test_vec_insert() {
 	int exp[] = {1, 2, 3};
 	CTEST(!memcmp(exp, vec_view(vec, 0), 3 * sizeof(int)));
 	vec_del(vec);
-	CTEST(!cerror_state());
+	CTEST(!vec_get_error());
 }
 
 void test_vec_replace() {
@@ -110,7 +109,7 @@ void test_vec_replace() {
 	vec_replace(vec, 2, &value, sizeof(int));
 	CTEST(!memcmp(exp, vec_view(vec, 0), 4 * sizeof(int)));
 	vec_del(vec);
-	CTEST(!cerror_state());
+	CTEST(!vec_get_error());
 }
 
 void test_vec_replace_range_expand() {
@@ -123,7 +122,7 @@ void test_vec_replace_range_expand() {
 	CTEST(vec_len(vec) == 7);
 	CTEST(!memcmp(exp, vec_view(vec, 0), 7 * sizeof(int)));
 	vec_del(vec);
-	CTEST(!cerror_state());
+	CTEST(!vec_get_error());
 }
 
 void test_vec_replace_range_shrink() {
@@ -136,7 +135,7 @@ void test_vec_replace_range_shrink() {
 	CTEST(vec_len(vec) == 7);
 	CTEST(!memcmp(exp, vec_view(vec, 0), 7 * sizeof(int)));
 	vec_del(vec);
-	CTEST(!cerror_state());
+	CTEST(!vec_get_error());
 }
 
 int main(void) {
