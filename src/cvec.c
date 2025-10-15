@@ -139,6 +139,22 @@ const void *cvec_view(const cvec_t *vec, size_t index) {
 	return (void*)((unsigned char*)vec->data + index * vec->sizeof_type);
 }
 
+/** Returns a pointer to a vector item.
+ * \param vec A pointer to the vector to be accessed.
+ * \param index The index of the element to be accessed. 
+ * \return A pointer to the item. */
+void *cvec_ptr(cvec_t *vec, size_t index) {
+	if (!vec) {
+		g_err = "Invalid argument.";
+		return NULL;
+	}
+	if (index >= vec->len) {
+		g_err = "Index is out of bounds.";
+		return NULL;
+	}
+	return (void*)((unsigned char*)vec->data + index * vec->sizeof_type);
+}
+
 /** Append an item at the end of the vector.
  * \param vec A pointer to the vector to be modified.
  * \param value A pointer to the value to be appended.

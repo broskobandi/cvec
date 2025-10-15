@@ -75,6 +75,12 @@ void cvec_del(cvec_t *vec);
  * \return A const pointer to the item. */
 const void *cvec_view(const cvec_t *vec, size_t index);
 
+/** Returns a pointer to a vector item.
+ * \param vec A pointer to the vector to be accessed.
+ * \param index The index of the element to be accessed. 
+ * \return A pointer to the item. */
+void *cvec_ptr(cvec_t *vec, size_t index);
+
 /** Append an item at the end of the vector.
  * \param vec A pointer to the vector to be modified.
  * \param value A pointer to the value to be appended.
@@ -169,6 +175,9 @@ const char *cvec_get_error();
 	}\
 	static inline const T *v##T##_view(const v##T *vec, size_t index) {\
 		return (T*)cvec_view((cvec_t*)vec, index);\
+	}\
+	static inline T *v##T##_ptr(v##T *vec, size_t index) {\
+		return (T*)cvec_ptr((cvec_t*)vec, index);\
 	}\
 	static inline void v##T##_push_back(v##T *vec, T value) {\
 		cvec_push_back((cvec_t*)vec, (void*)&value, sizeof(T));\
