@@ -38,7 +38,7 @@ _Thread_local static const char *g_err;
 #define DEFAULT_CAPACITY 8
 
 /** Opaque handle for the vector object. */
-struct vec {
+struct cvec {
 	/** Pointer to the vector data. */
 	void *data;
 
@@ -54,7 +54,7 @@ struct vec {
 
 /** Returns the default capacity.
  * \return The default capacity. */
-size_t vec_default_capacity() {
+size_t cvec_default_capacity() {
 	return DEFAULT_CAPACITY;
 }
 
@@ -62,8 +62,8 @@ size_t vec_default_capacity() {
  * \param sizeof_type The size of the type that's meant to be stored 
  * in the vector.
  * \return A pointer to the allocated vector. */
-vec_t *vec_new(size_t sizeof_type) {
-	vec_t *vec = carena_alloc(sizeof(vec_t));
+cvec_t *cvec_new(size_t sizeof_type) {
+	cvec_t *vec = carena_alloc(sizeof(cvec_t));
 	if (!vec) {
 		g_err = "Failed to allocate vector.";
 		return NULL;
@@ -82,7 +82,7 @@ vec_t *vec_new(size_t sizeof_type) {
 /** Returns the the length of a vector.
  * \param vec A pointer to the vector to be accessed. 
  * \return The length of the vector. */
-size_t vec_len(const vec_t *vec) {
+size_t cvec_len(const cvec_t *vec) {
 	if (!vec) {
 		g_err = "Invalid argument.";
 		return (size_t)-1;
@@ -93,7 +93,7 @@ size_t vec_len(const vec_t *vec) {
 /** Returns the the size of a vector's type.
  * \param vec A pointer to the vector to be accessed. 
  * \return The size of the vector's type. */
-size_t vec_size(const vec_t *vec) {
+size_t cvec_size(const cvec_t *vec) {
 	if (!vec) {
 		g_err = "Invalid argument.";
 		return (size_t)-1;
@@ -104,7 +104,7 @@ size_t vec_size(const vec_t *vec) {
 /** Returns the the capacity of a vector.
  * \param vec A pointer to the vector to be accessed. 
  * \return The capacity of the vector. */
-size_t vec_capacity(const vec_t *vec) {
+size_t cvec_capacity(const cvec_t *vec) {
 	if (!vec) {
 		g_err = "Invalid argument.";
 		return (size_t)-1;
@@ -114,7 +114,7 @@ size_t vec_capacity(const vec_t *vec) {
 
 /** Deletes a vector instance.
  * \param vec A pointer to the vector to be deleted. */
-void vec_del(vec_t *vec) {
+void cvec_del(cvec_t *vec) {
 	if (!vec || !vec->data) {
 		g_err = "Invalid argument.";
 		return;
@@ -127,7 +127,7 @@ void vec_del(vec_t *vec) {
  * \param vec A pointer to the vector to be accessed.
  * \param index The index of the element to be accessed. 
  * \return A const pointer to the item. */
-const void *vec_view(const vec_t *vec, size_t index) {
+const void *cvec_view(const cvec_t *vec, size_t index) {
 	if (!vec) {
 		g_err = "Invalid argument.";
 		return NULL;
@@ -144,7 +144,7 @@ const void *vec_view(const vec_t *vec, size_t index) {
  * \param value A pointer to the value to be appended.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_push_back(vec_t *vec, void *value, size_t sizeof_type) {
+void cvec_push_back(cvec_t *vec, void *value, size_t sizeof_type) {
 	if (
 		!vec || !vec->data || !value ||
 		sizeof_type != vec->sizeof_type
@@ -168,7 +168,7 @@ void vec_push_back(vec_t *vec, void *value, size_t sizeof_type) {
 
 /** Removes the last item of a vector.
  * \param vec A pointer to the vector to be modified. */
-void vec_pop_back(vec_t *vec) {
+void cvec_pop_back(cvec_t *vec) {
 	if (!vec || !vec->data) {
 		g_err = "Invalid argument.";
 		return;
@@ -194,7 +194,7 @@ void vec_pop_back(vec_t *vec) {
  * \param value A pointer to the value to be prepended.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_push_front(vec_t *vec, void *value, size_t sizeof_type) {
+void cvec_push_front(cvec_t *vec, void *value, size_t sizeof_type) {
 	if (
 		!vec || !vec->data || !value ||
 		sizeof_type != vec->sizeof_type
@@ -219,7 +219,7 @@ void vec_push_front(vec_t *vec, void *value, size_t sizeof_type) {
 
 /** Removes the first item of a vector.
  * \param vec A pointer to the vector to be modified. */
-void vec_pop_front(vec_t *vec) {
+void cvec_pop_front(cvec_t *vec) {
 	if (!vec || !vec->data) {
 		g_err = "Invalid argument.";
 		return;
@@ -248,7 +248,7 @@ void vec_pop_front(vec_t *vec) {
  * \param len The length of the array. 
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_append(vec_t *vec, void *arr, size_t len, size_t sizeof_type) {
+void cvec_append(cvec_t *vec, void *arr, size_t len, size_t sizeof_type) {
 	if (
 		!vec || !vec->data || !arr ||
 		sizeof_type != vec->sizeof_type
@@ -276,7 +276,7 @@ void vec_append(vec_t *vec, void *arr, size_t len, size_t sizeof_type) {
  * \param len The length of the array. 
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_prepend(vec_t *vec, void *arr, size_t len, size_t sizeof_type) {
+void cvec_prepend(cvec_t *vec, void *arr, size_t len, size_t sizeof_type) {
 	if (
 		!vec || !vec->data || !arr ||
 		sizeof_type != vec->sizeof_type
@@ -302,7 +302,7 @@ void vec_prepend(vec_t *vec, void *arr, size_t len, size_t sizeof_type) {
 /** Removes an item of a vector.
  * \param vec A pointer to the vector to be modified.
  * \param index The item's index. */
-void vec_remove(vec_t *vec, size_t index) {
+void cvec_remove(cvec_t *vec, size_t index) {
 	if (!vec || !vec->data) {
 		g_err = "Invalid argument.";
 		return;
@@ -339,7 +339,7 @@ void vec_remove(vec_t *vec, size_t index) {
  * \param value A pointer to the value to be inserted.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_insert(vec_t *vec, size_t index, void *value, size_t sizeof_type) {
+void cvec_insert(cvec_t *vec, size_t index, void *value, size_t sizeof_type) {
 	if (
 		!vec || !vec->data || !value ||
 		sizeof_type != vec->sizeof_type
@@ -376,7 +376,7 @@ void vec_insert(vec_t *vec, size_t index, void *value, size_t sizeof_type) {
  * \param value A pointer to the value to be inserted.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_replace(vec_t *vec, size_t index, void *value, size_t sizeof_type) {
+void cvec_replace(cvec_t *vec, size_t index, void *value, size_t sizeof_type) {
 	if (
 		!vec || !vec->data || !value ||
 		sizeof_type != vec->sizeof_type
@@ -400,8 +400,8 @@ void vec_replace(vec_t *vec, size_t index, void *value, size_t sizeof_type) {
  * \param range The number of items to be replaced.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_replace_range(
-	vec_t *vec, size_t index, void *arr,
+void cvec_replace_range(
+	cvec_t *vec, size_t index, void *arr,
 	size_t len, size_t range, size_t sizeof_type)
 {
 	if (
@@ -440,6 +440,6 @@ void vec_replace_range(
 
 /** Returns a string containing the latest error information if exists or 
  * NULL if it does not. */
-const char *vec_get_error() {
+const char *cvec_get_error() {
 	return g_err;
 }

@@ -33,7 +33,7 @@ SOFTWARE.
 #include <stddef.h> /* for size_t */
 
 /** Opaque handle for the vector object. */
-typedef struct vec vec_t;
+typedef struct cvec cvec_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,60 +41,60 @@ extern "C" {
 
 /** Returns the default capacity.
  * \return The default capacity. */
-size_t vec_default_capacity();
+size_t cvec_default_capacity();
 
 /** Creates a new pointer for a specific type.
  * \param sizeof_type The size of the type that's meant to be stored 
  * in the vector.
  * \return A pointer to the allocated vector. */
-vec_t *vec_new(size_t sizeof_type);
+cvec_t *cvec_new(size_t sizeof_type);
 
 /** Returns the the length of a vector.
  * \param vec A pointer to the vector to be accessed. 
  * \return The length of the vector or (size_t)-1 on failure. */
-size_t vec_len(const vec_t *vec);
+size_t cvec_len(const cvec_t *vec);
 
 /** Returns the the size of a vector's type.
  * \param vec A pointer to the vector to be accessed. 
  * \return The size of the vector's type or (size_t)-1 on failure. */
-size_t vec_size(const vec_t *vec);
+size_t cvec_size(const cvec_t *vec);
 
 /** Returns the the capacity of a vector.
  * \param vec A pointer to the vector to be accessed. 
  * \return The capacity of the vector or (size_t)-1 on failure. */
-size_t vec_capacity(const vec_t *vec);
+size_t cvec_capacity(const cvec_t *vec);
 
 /** Deletes a vector instance.
  * \param vec A pointer to the vector to be deleted. */
-void vec_del(vec_t *vec);
+void cvec_del(cvec_t *vec);
 
 /** Returns a const pointer to a vector item.
  * \param vec A pointer to the vector to be accessed.
  * \param index The index of the element to be accessed. 
  * \return A const pointer to the item. */
-const void *vec_view(const vec_t *vec, size_t index);
+const void *cvec_view(const cvec_t *vec, size_t index);
 
 /** Append an item at the end of the vector.
  * \param vec A pointer to the vector to be modified.
  * \param value A pointer to the value to be appended.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_push_back(vec_t *vec, void *value, size_t sizeof_type);
+void cvec_push_back(cvec_t *vec, void *value, size_t sizeof_type);
 
 /** Removes the last item of a vector.
  * \param vec A pointer to the vector to be modified. */
-void vec_pop_back(vec_t *vec);
+void cvec_pop_back(cvec_t *vec);
 
 /** Prepends an item at the beginning of a vector.
  * \param vec A pointer to the vector to be modified.
  * \param value A pointer to the value to be prepended.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_push_front(vec_t *vec, void *value, size_t sizeof_type);
+void cvec_push_front(cvec_t *vec, void *value, size_t sizeof_type);
 
 /** Removes the first item of a vector.
  * \param vec A pointer to the vector to be modified. */
-void vec_pop_front(vec_t *vec);
+void cvec_pop_front(cvec_t *vec);
 
 /** Appends an array at the end of a vector.
  * \param vec A pointer to the vector to be modified.
@@ -102,7 +102,7 @@ void vec_pop_front(vec_t *vec);
  * \param len The length of the array. 
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_append(vec_t *vec, void *arr, size_t len, size_t sizeof_type);
+void cvec_append(cvec_t *vec, void *arr, size_t len, size_t sizeof_type);
 
 /** Prepends an array at the beginning of a vector.
  * \param vec A pointer to the vector to be modified.
@@ -110,12 +110,12 @@ void vec_append(vec_t *vec, void *arr, size_t len, size_t sizeof_type);
  * \param len The length of the array. 
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_prepend(vec_t *vec, void *arr, size_t len, size_t sizeof_type);
+void cvec_prepend(cvec_t *vec, void *arr, size_t len, size_t sizeof_type);
 
 /** Removes an item of a vector.
  * \param vec A pointer to the vector to be modified.
  * \param index The item's index. */
-void vec_remove(vec_t *vec, size_t index);
+void cvec_remove(cvec_t *vec, size_t index);
 
 /** Inserts an item into a vector.
  * \param vec A pointer to the vector to be modified.
@@ -123,7 +123,7 @@ void vec_remove(vec_t *vec, size_t index);
  * \param value A pointer to the value to be inserted.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_insert(vec_t *vec, size_t index, void *value, size_t sizeof_type);
+void cvec_insert(cvec_t *vec, size_t index, void *value, size_t sizeof_type);
 
 /** Replaces an item in a vector.
  * \param vec A pointer to the vector to be modified.
@@ -131,7 +131,7 @@ void vec_insert(vec_t *vec, size_t index, void *value, size_t sizeof_type);
  * \param value A pointer to the value to be inserted.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_replace(vec_t *vec, size_t index, void *value, size_t sizeof_type);
+void cvec_replace(cvec_t *vec, size_t index, void *value, size_t sizeof_type);
 
 /** Replaces a range of items in a vector.
  * \param vec A pointer to the vector to be modified.
@@ -141,13 +141,13 @@ void vec_replace(vec_t *vec, size_t index, void *value, size_t sizeof_type);
  * \param range The number of items to be replaced.
  * \param sizeof_type The size of the vector's type 
  * (must be the same as the value's). */
-void vec_replace_range(
-	vec_t *vec, size_t index, void *arr,
+void cvec_replace_range(
+	cvec_t *vec, size_t index, void *arr,
 	size_t len, size_t range, size_t sizeof_type);
 
 /** Returns a string containing the latest error information if exists or 
  * NULL if it does not. */
-const char *vec_get_error();
+const char *cvec_get_error();
 
 #ifdef __cplusplus
 }
