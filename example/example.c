@@ -9,7 +9,7 @@ CVEC_TYPEDEF(int);
 
 int main(void) {
 	/* Create a new vector of the desired type. */
-	vint_t *vec = vint_new();
+	vint *vec = vint_new();
 
 	/* Push data at the end. */
 	vint_push_back(vec, 2);

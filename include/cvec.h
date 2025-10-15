@@ -151,53 +151,53 @@ void cvec_replace_range(
 const char *cvec_get_error();
 
 #define CVEC_TYPEDEF(T)\
-	typedef struct v##T v##T##_t;\
-	static inline v##T##_t *v##T##_new() {\
-		return (v##T##_t*)cvec_new(sizeof(T));\
+	typedef struct v##T v##T;\
+	static inline v##T *v##T##_new() {\
+		return (v##T*)cvec_new(sizeof(T));\
 	}\
-	static inline size_t v##T##_len(const v##T##_t *vec) {\
+	static inline size_t v##T##_len(const v##T *vec) {\
 		return cvec_len((cvec_t*)vec);\
 	}\
-	static inline size_t v##T##_size(const v##T##_t *vec) {\
+	static inline size_t v##T##_size(const v##T *vec) {\
 		return cvec_size((cvec_t*)vec);\
 	}\
-	static inline size_t v##T##_capacity(const v##T##_t *vec) {\
+	static inline size_t v##T##_capacity(const v##T *vec) {\
 		return cvec_capacity((cvec_t*)vec);\
 	}\
-	static inline void v##T##_del(v##T##_t *vec) {\
+	static inline void v##T##_del(v##T *vec) {\
 		cvec_del((cvec_t*)vec);\
 	}\
-	static inline const T *v##T##_view(const v##T##_t *vec, size_t index) {\
+	static inline const T *v##T##_view(const v##T *vec, size_t index) {\
 		return (T*)cvec_view((cvec_t*)vec, index);\
 	}\
-	static inline void v##T##_push_back(v##T##_t *vec, T value) {\
+	static inline void v##T##_push_back(v##T *vec, T value) {\
 		cvec_push_back((cvec_t*)vec, (void*)&value, sizeof(T));\
 	}\
-	static inline void v##T##_pop_back(v##T##_t *vec) {\
+	static inline void v##T##_pop_back(v##T *vec) {\
 		cvec_pop_back((cvec_t*)vec);\
 	}\
-	static inline void v##T##_push_front(v##T##_t *vec, T value) {\
+	static inline void v##T##_push_front(v##T *vec, T value) {\
 		cvec_push_front((cvec_t*)vec, &value, sizeof(T));\
 	}\
-	static inline void v##T##_pop_front(v##T##_t *vec) {\
+	static inline void v##T##_pop_front(v##T *vec) {\
 		cvec_pop_front((cvec_t*)vec);\
 	}\
-	static inline void v##T##_append(v##T##_t *vec, T *arr, size_t len) {\
+	static inline void v##T##_append(v##T *vec, T *arr, size_t len) {\
 		cvec_append((cvec_t*)vec, (void*)arr, len, sizeof(T));\
 	}\
-	static inline void v##T##_prepend(v##T##_t *vec, T *arr, size_t len) {\
+	static inline void v##T##_prepend(v##T *vec, T *arr, size_t len) {\
 		cvec_prepend((cvec_t*)vec, (void*)arr, len, sizeof(T));\
 	}\
-	static inline void v##T##_remove(v##T##_t *vec, size_t index) {\
+	static inline void v##T##_remove(v##T *vec, size_t index) {\
 		cvec_remove((cvec_t*)vec, index);\
 	}\
-	static inline void v##T##_insert(v##T##_t *vec, T value, size_t index) {\
+	static inline void v##T##_insert(v##T *vec, T value, size_t index) {\
 		cvec_insert((cvec_t*)vec, index, (void*)&value, sizeof(T));\
 	}\
-	static inline void v##T##_replace(v##T##_t *vec, size_t index, T value) {\
+	static inline void v##T##_replace(v##T *vec, size_t index, T value) {\
 		cvec_replace((cvec_t*)vec, index, (void*)&value, sizeof(T));\
 	}\
-	static inline void v##T##_replace_range(v##T##_t *vec, size_t index, T *arr, size_t len, size_t range) {\
+	static inline void v##T##_replace_range(v##T *vec, size_t index, T *arr, size_t len, size_t range) {\
 		cvec_replace_range((cvec_t*)vec, index, (void*)arr, len, range, sizeof(T));\
 	}
 
