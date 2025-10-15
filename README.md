@@ -15,28 +15,24 @@ their task.
 The library provides the expected functions that can be found in object
 oriented languages, such as push, pop, and append.
 ## Dependencies
-### For compilation
-- gcc
-- [cerror](https://gitlab.com/broskobandi/cerror.git)
-- [carena](https://gitlab.com/broskobandi/carena.git)
-### For the test utility
-- [ctest](https://gitlab.com/broskobandi/ctest.git)
-- clang
-### For generating the documentation
-- doxygen
+- cmake (for building the library)
+- [carena](https://github.com/broskobandi/carena.git)
+- [ctest](https://github.com/broskobandi/ctest.git) (for running the tests)
 ## Installation
 ```bash
-git clone https://gitlab.com/broskobandi/cvec.git &&
+git clone https://github.com/broskobandi/cvec.git &&
 cd cvec &&
+mkdir build &&
+cd build &&
+cmake .. &&
 make &&
 sudo make install
 ```
 ## Testing
 ```bash
-cd cvec &&
-make clean &&
+cd cvec/build &&
 make test &&
-make clean
+./test
 ```
 ## Usage
 ```c
@@ -90,13 +86,6 @@ int main(void) {
 	/* Remove an item. */
 	vec_remove(vec, 3);
 
-```
-Use the -L/usr/local/lib -lcvec when compiling the application using 
-the library.
-## Documentation
-```bash
-cd cvec &&
-make doc
 ```
 ## Todo
 - Make the default capacity adjustable at compile time.
