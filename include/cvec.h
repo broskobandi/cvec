@@ -39,6 +39,7 @@ typedef struct cvec cvec_t;
 extern "C" {
 #endif
 
+
 /** Returns the default capacity.
  * \return The default capacity. */
 size_t cvec_default_capacity();
@@ -148,6 +149,57 @@ void cvec_replace_range(
 /** Returns a string containing the latest error information if exists or 
  * NULL if it does not. */
 const char *cvec_get_error();
+
+#define CVEC_TYPEDEF(T)\
+	typedef struct cvec_##T cvec_##T##_t;\
+	static inline cvec_##T##_t *cvec_##T##_new() {\
+		return (cvec_##T##_t*)cvec_new(sizeof(T));\
+	}\
+	static inline size_t cvec_##T##_len(const cvec_##T##_t *vec) {\
+		return cvec_len((cvec_t*)vec);\
+	}\
+	static inline size_t cvec_##T##_size(const cvec_##T##_t *vec) {\
+		return cvec_size((cvec_t*)vec);\
+	}\
+	static inline size_t cvec_##T##_capacity(const cvec_##T##_t *vec) {\
+		return cvec_capacity((cvec_t*)vec);\
+	}\
+	static inline void cvec_##T##_del(cvec_##T##_t *vec) {\
+		cvec_del((cvec_t*)vec);\
+	}\
+	static inline const T *cvec_##T##_view(const cvec_##T##_t *vec, size_t index) {\
+		return (T*)cvec_view((cvec_t*)vec, index);\
+	}\
+	static inline void cvec_##T##_push_back(cvec_##T##_t *vec, T value) {\
+		cvec_push_back((cvec_t*)vec, (void*)&value, sizeof(T));\
+	}\
+	static inline void cvec_##T##_pop_back(cvec_##T##_t *vec) {\
+		cvec_pop_back((cvec_t*)vec);\
+	}\
+	static inline void cvec_##T##_push_front(cvec_##T##_t *vec, T value) {\
+		cvec_push_front((cvec_t*)vec, &value, sizeof(T));\
+	}\
+	static inline void cvec_##T##_pop_front(cvec_##T##_t *vec) {\
+		cvec_pop_front((cvec_t*)vec);\
+	}\
+	static inline void cvec_##T##_append(cvec_##T##_t *vec, T *arr, size_t len) {\
+		cvec_append((cvec_t*)vec, (void*)arr, len, sizeof(T));\
+	}\
+	static inline void cvec_##T##_prepend(cvec_##T##_t *vec, T *arr, size_t len) {\
+		cvec_prepend((cvec_t*)vec, (void*)arr, len, sizeof(T));\
+	}\
+	static inline void cvec_##T##_remove(cvec_##T##_t *vec, size_t index) {\
+		cvec_remove((cvec_t*)vec, index);\
+	}\
+	static inline void cvec_##T##_insert(cvec_##T##_t *vec, T value, size_t index) {\
+		cvec_insert((cvec_t*)vec, index, (void*)&value, sizeof(T));\
+	}\
+	static inline void cvec_##T##_replace(cvec_##T##_t *vec, size_t index, T value) {\
+		cvec_replace((cvec_t*)vec, index, (void*)&value, sizeof(T));\
+	}\
+	static inline void cvec_##T##_replace_range(cvec_##T##_t *vec, size_t index, T *arr, size_t len, size_t range) {\
+		cvec_replace_range((cvec_t*)vec, index, (void*)arr, len, range, sizeof(T));\
+	}
 
 #ifdef __cplusplus
 }
